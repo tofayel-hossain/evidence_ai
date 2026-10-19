@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EvidenceAI — Paper Assistant</title>
+  <meta name="description" content="Simple, accurate research paper assistant with citation validation and fact checking.">
+  
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+        </div>
+        <span class="brand-name">EvidenceAI</span>
+        <span id="active-doc-badge" class="active-doc-badge">All Papers</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="research" id="tab-btn-research">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Chat
+        </button>
+        <button class="nav-tab" data-tab="documents" id="tab-btn-documents">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          Papers (<span id="doc-count-badge">0</span>)
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- Tab 1: Chat & Fact Check -->
+    <section id="view-research" class="tab-view active">
+      <div class="research-grid">
+        
+        <!-- Left Column: Question & Direct Answer -->
+        <div class="panel qa-column">
+          <div class="panel-header">
+            <h2>Ask Question</h2>
+          </div>
+
+          <!-- Query Input Form -->
+          <form id="query-form" class="query-box">
+            <div class="input-row">
+              <input 
+                type="text" 
+                id="query-input" 
+                placeholder="Ask anything about your paper..." 
+                required
+                autocomplete="off"
+              />
+              <button type="submit" id="query-submit" class="primary-btn">
+                Ask
+              </button>
+            </div>
+
+            <div class="controls-row">
+              <div class="strategy-indicator">
+                <span class="strategy-label">Search:</span>
+                <span class="strategy-pill" id="strategy-pill">
+                  <span class="pill-dot"></span>
+                  <span id="active-strategy-name">Auto AI</span>
+                </span>
+                <input type="hidden" id="retrieval-method" value="auto" />
+              </div>
+            </div>
+          </form>
+
+          <!-- Answer & Citations Area -->
+          <div id="answer-panel" class="answer-wrapper">
+            <div class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <h3>No answers yet</h3>
+              <p>Type a question above to get a direct answer with page citations.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Fact Check -->
+        <div class="panel verification-column">
+          <div class="panel-header">
+            <h2>Fact Check</h2>
+          </div>
+
+          <div id="claims-panel" class="claims-wrapper">
+            <div class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <p>Ask a question to see fact checks for each statement.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Tab 2: Papers & Upload -->
+    <section id="view-documents" class="tab-view">
+      <div class="documents-grid">
+        
+        <!-- Left: Upload Area -->
+        <div class="panel upload-panel">
+          <div class="panel-header">
+            <h2>Upload Paper</h2>
+          </div>
+
+          <div id="drop-zone" class="drop-zone">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h3>Drop PDF here</h3>
+            <p>or click to browse files (up to 25MB)</p>
+          </div>
+          <input type="file" id="file-input" accept="application/pdf" style="display: none;" />
+
+          <!-- Upload Progress -->
+          <div id="upload-progress-container" class="upload-progress-container" style="display: none;">
+            <div class="progress-info">
+              <span>Uploading paper...</span>
+              <span id="upload-progress-text">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="upload-progress-bar" class="progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div id="upload-status-message" class="status-banner" style="display: none;"></div>
+        </div>
+
+        <!-- Right: Papers List -->
+        <div class="panel library-panel">
+          <div class="panel-header">
+            <div class="header-split">
+              <h2>Your Papers</h2>
+              <input type="text" id="doc-search" placeholder="Search papers..." class="search-input" />
+            </div>
+          </div>
+
+          <div id="document-list" class="document-list-wrapper">
+            <!-- Dynamically populated by library.ts -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Load Compiled TypeScript Application -->
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
