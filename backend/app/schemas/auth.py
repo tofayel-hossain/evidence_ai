@@ -1,6 +1,12 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
+
+try:
+    import email_validator  # noqa: F401
+    from pydantic import EmailStr
+except (ImportError, Exception):
+    EmailStr = str  # Safe fallback if email_validator package is absent
 
 class UserRegister(BaseModel):
     email: EmailStr = Field(..., description="User email address")
